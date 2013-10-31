@@ -1,0 +1,55 @@
+#!/bin/sh -e
+
+# Script to create header files and links to configure
+# U-Boot for a specific board.
+#
+# Parameters:  Target  Architecture  CPU  Board [VENDOR] [SOC]
+#
+# (C) 2002-2006 DENX Software Engineering, Wolfgang Denk <wd@denx.de>
+#
+
+
+BOARD_NAME=""	# Name to print in make output
+
+[ "${BOARD_NAME}" ] || BOARD_NAME="$1"
+echo "Configuring for ${BOARD_NAME} board... HOHO~"
+
+#
+# Create link to architecture specific headers
+#
+cd ./include
+rm -f asm
+ln -s asm-$2 asm
+rm -f asm-$2/arch
+ln -s ${LNPREFIX}arch-$6 asm-$2/arch
+
+
+rm -f asm-$2/proc
+ln -s ${LNPREFIX}proc-armv asm-$2/proc
+
+#
+# Create include file for Make
+#
+echo "ARCH   = $2" >  config.mk
+echo "CPU    = $3" >> config.mk
+echo "BOARD  = $4" >> config.mk
+echo "VENDOR = $5" >> config.mk
+echo "SOC    = $6" >> config.mk
+
+# Assign board directory to BOARDIR variable
+BOARDDIR=$5/$4
+
+#
+# Create board specific header file
+#
+> config.h		# Create new config file
+echo "/* Automatically generated - do not edit  HOHO ~*/" >>config.h
+
+cat << EOF >> config.h
+#define CONFIG_BOARDDIR board/$BOARDDIR
+#include <config_defaults.h>
+#include <configs/$1.h>
+#include <asm/config.h>
+EOF
+
+exit 0

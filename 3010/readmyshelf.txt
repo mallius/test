@@ -1,0 +1,24 @@
+
+编译uboot的顺序：
+(1)make smdk2440a_config
+Makefile中找到smdk2440a_config : unconfig --> mkconfig 6个参数
+(2)make 
+
+
+常用的命令
+grep "***" * -nR
+find -name a_file_name
+vi -t function_name
+cs find c function_name/struct 
+cs find g function_name/struct
+
+
+u-boot启动过程:
+(1)
+Makefile中 
+smdk2440a_config : unconfig
+@$(MKCONFIG) $(@:_config=) arm arm920t smdk2440a embedclub s3c2440
+
+(2)
+mkconfig
+
